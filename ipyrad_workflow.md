@@ -51,7 +51,7 @@ Lib_#	                           ## [0] [assembly_name]: Assembly name. Used to 
 1                              ## [16] [filter_adapters]: Filter for adapters/primers (1 or 2=stricter)
 35                             ## [17] [filter_min_trim_len]: Min length of reads after adapter trim
 2                              ## [18] [max_alleles_consens]: Max alleles per site in consensus sequences
-5, 5                           ## [19] [max_Ns_consens]: Max N's (uncalled bases) in consensus (R1, R2)
+5, 5                           ## [19] [max_Ns_consens]: Max Ns (uncalled bases) in consensus (R1, R2)
 8, 8                           ## [20] [max_Hs_consens]: Max Hs (heterozygotes) in consensus (R1, R2)
 4                              ## [21] [min_samples_locus]: Min # samples per locus for output
 20, 20                         ## [22] [max_SNPs_locus]: Max # SNPs per locus (R1, R2)
@@ -77,12 +77,48 @@ Lib_#	                           ## [0] [assembly_name]: Assembly name. Used to 
 
 command: use a for loop to run each sublibrary as a separate job for steps 1-3
 
-branch each sublibrary
-edit branched params files: 0.90 & 0.95
-14. clustering threshold 0.90, 0.95
-rerun step 3 for the different clustering thresholds
+###Branch each sublibrary###:
+```
+ipyrad -p params-Lib_3.txt -b L3_90
+ipyrad -p params-Lib_3.txt -b L3_95
+ipyrad -p params-Lib_6.txt -b L6_90
+ipyrad -p params-Lib_6.txt -b L6_95
+ipyrad -p params-Lib_9.txt -b L9_90
+ipyrad -p params-Lib_9.txt -b L9_95
+ipyrad -p params-Lib_11.txt -b L11_90
+ipyrad -p params-Lib_11.txt -b L11_95
+ipyrad -p params-Lib_12.txt -b L12_90
+ipyrad -p params-Lib_12.txt -b L12_95
+ipyrad -p params-Lib_T.txt -b LT_90
+ipyrad -p params-Lib_T.txt -b LT_95
+ipyrad -p params-Lib_U.txt -b LU_90
+ipyrad -p params-Lib_U.txt -b LU_95
+ipyrad -p params-Lib_V.txt -b LV_90
+ipyrad -p params-Lib_V.txt -b LV_95
+ipyrad -p params-Lib_W.txt -b LW_90
+ipyrad -p params-Lib_W.txt -b LW_95
+ipyrad -p params-Lib_X.txt -b LX_90
+ipyrad -p params-Lib_X.txt -b LX_95
+ipyrad -p params-Lib_Y.txt -b LY_90
+ipyrad -p params-Lib_Y.txt -b LY_95
+ipyrad -p params-Lib_Z.txt -b LZ_90
+ipyrad -p params-Lib_Z.txt -b LZ_95
+```
+###Edit branched params files: 0.90 & 0.95
+`nano params*90.txt`
+`nano params*95.txt`
+14. clustering threshold 0.90, 0.95, respectively
 
-merge all 12 0.85 libraries
+###Merge all 12 0.85 libraries
+ipyrad -m 12libs params-Lib_3.txt params-Lib_6.txt params-Lib_9.txt params-Lib_11.txt params-Lib_12.txt params-Lib_T.txt params-Lib_U.txt params-Lib_V.txt params-Lib_W.txt params-Lib_X.txt params-Lib_Y.txt params-Lib_Z.txt
+
+###Branch phylo individuals
+###Branch popgen individuals
+
+###Run steps 4-7
+
+###Rerun step 3 for the different clustering thresholds
+
 merge all 12 0.90 libraries
 merge all 12 0.95 libraries
 
