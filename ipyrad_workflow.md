@@ -76,6 +76,15 @@ Lib_#	                           ## [0] [assembly_name]: Assembly name. Used to 
 16. filter adapters: 1
 
 command: use a for loop to run each sublibrary as a separate job for steps 1-3
+```
+#!/bin/bash
+
+export cores=16
+
+for file in ./params-Lib_*.txt; do
+bsub -J "$file" -eo "$file".err -oo "$file".out -q PQ_wettberg -n $cores -R "span[ptile=16]" -m "IB_16C_96G" time ipyrad -p "$file" -s 1234 -d -f -c $cores > "$file"_run.log 2>&1;
+done
+```
 
 ###Branch each sublibrary###:
 ```
@@ -110,12 +119,24 @@ ipyrad -p params-Lib_Z.txt -b LZ_95
 14. clustering threshold 0.90, 0.95, respectively
 
 ###Merge all 12 0.85 libraries
-ipyrad -m 12libs params-Lib_3.txt params-Lib_6.txt params-Lib_9.txt params-Lib_11.txt params-Lib_12.txt params-Lib_T.txt params-Lib_U.txt params-Lib_V.txt params-Lib_W.txt params-Lib_X.txt params-Lib_Y.txt params-Lib_Z.txt
+`ipyrad -m 12libs params-Lib_3.txt params-Lib_6.txt params-Lib_9.txt params-Lib_11.txt params-Lib_12.txt params-Lib_T.txt params-Lib_U.txt params-Lib_V.txt params-Lib_W.txt params-Lib_X.txt params-Lib_Y.txt params-Lib_Z.txt`
 
 ###Branch phylo individuals
+`ipyrad -p params-12libs.txt -b phylo85 3C 3E 6A 6C 6D 6F 6G 6H 9C 9F 9H 11C 11G 11H 12C 12D 12E 12F 12G 12H TA TB TC TD TE TF TG TH UA UB UC UD UE UF UG UH WA WF XA XB XC XD XE XF XG XH YB YC YG YH ZA ZB ZC ZD ZE ZF ZG ZH`
+
 ###Branch popgen individuals
+`ipyrad -p params-12libs.txt -b pop85 3A 3B 3C 3D 3E 3F 3G 3H 6A 6B 6C 6D 6E 6F 6G 9A 9B 9C 9D 9E 9F 9G 9H 11A 11B 11C 11D 11E 11F 11G 11H 12A 12B 12C 12F 12G 12H TB WA WB WC WD WE WF WG WH XE XF XH YA YB YC YD YE YF YG YH ZC ZF ZG`
 
 ###Run steps 4-7
+####On all 88 individuals
+`ipyrad -p params-12libs.txt -s 4567 -f`
+
+####On just the phylogeny individuals
+`ipyrad -p params-phylo85.txt -s 4567 -f`
+
+####On just the popgen individuals
+`ipyrad -p params-pop85.txt -s 4567 -f`
+
 
 ###Rerun step 3 for the different clustering thresholds
 
