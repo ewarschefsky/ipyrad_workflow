@@ -129,22 +129,36 @@ ipyrad -p params-Lib_Z.txt -b LZ_95
 
 ###Run steps 4-7
 ####On all 88 individuals
-`ipyrad -p params-12libs.txt -s 4567 -f`
+```
+export file=12libs
+export cores=32
+
+bsub -J "$file" -eo "$file".err -oo "$file".out -q PQ_wettberg -n $cores -R "span[ptile=16]" -m "IB_16C_96G" time ipyrad -p params-12libs.txt -s 4567 -d -f -c $cores --MPI > "$file"_run.log 2>&1;
+```
 
 ####On just the phylogeny individuals
-`ipyrad -p params-phylo85.txt -s 4567 -f`
+```
+export file=12libs
+export cores=32
+
+bsub -J "$file" -eo "$file".err -oo "$file".out -q PQ_wettberg -n $cores -R "span[ptile=16]" -m "IB_16C_96G" time ipyrad -p params-phylo85.txt -s 4567 -d -f -c $cores --MPI > "$file"_run.log 2>&1;
+```
 
 ####On just the popgen individuals
-`ipyrad -p params-pop85.txt -s 4567 -f`
+```
+export file=12libs
+export cores=32
+
+bsub -J "$file" -eo "$file".err -oo "$file".out -q PQ_wettberg -n $cores -R "span[ptile=16]" -m "IB_16C_96G" time ipyrad -p params-pop85.txt -s 4567 -d -f -c $cores --MPI > "$file"_run.log 2>&1;
+```
 
 
 ###Rerun step 3 for the different clustering thresholds
-
 merge all 12 0.90 libraries
 merge all 12 0.95 libraries
 
-branch subset of phylogenetic analysis individuals for each threshold: 0.85, 0.90, 0.95
-branch subset of population level analysis individuals: 0.85, 0.90, 0.95
+branch subset of phylogenetic analysis individuals for each threshold: 0.90, 0.95
+branch subset of population level analysis individuals: 0.90, 0.95
 
 set params for each params file:
 phylo85
