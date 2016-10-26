@@ -86,7 +86,7 @@ bsub -J "$file" -eo "$file".err -oo "$file".out -q PQ_wettberg -n $cores -R "spa
 done
 ```
 
-###Branch each sublibrary###:
+###Branch each sublibrary for both clustering threshholds###:
 ```
 ipyrad -p params-Lib_3.txt -b L3_90
 ipyrad -p params-Lib_3.txt -b L3_95
@@ -169,9 +169,23 @@ pop85
 pop90
 pop95
 
-Step 4: joint estimation of heterozygosity and error rate, Step 5: consensus base calling and filtering, Step 6: clustering/mapping across individuals, Step 7: filtering and formatting data output
+###Step 4: joint estimation of heterozygosity and error rate, Step 5: consensus base calling and filtering, Step 6: clustering/mapping across individuals, Step 7: filtering and formatting data output
 
-run step 4-7 on phylo 0.85
+run step 4-7 on phylo 0.85 using MPI
+```
+export cores=32
+export file=12libs
+
+bsub -J "$file" -eo "$file".err -oo "$file".out -q PQ_wettberg -n "$cores" -R "span[ptile=16]" -m "IB_16C_96G" time ipyrad -p params-12libs.txt -s 4567 -d -f -c "$cores" --MPI > "$file"_run.l$
+```
+not using MPI
+```
+export cores=16
+export file=12libs
+
+bsub -J "$file" -eo "$file".err -oo "$file".out -q PQ_wettberg -n "$cores" -R "span[ptile=16]" -m "IB_16C_96G" time ipyrad -p params-12libs.txt -s 4567 -d -f -c "$cores" > "$file"_run.l$
+```
+
 run step 4-7 on phylo 0.90
 run step 4-7 on phylo 0.95
 
