@@ -9,10 +9,22 @@ Unwrap the tarball
 This puts the files in a stupid directory called ```Project_Emily``` move them to the current directory
 ```mv Project_Emily/Sample* .```
 Rename the files to correspond to the real library name
-
+```
+mvdir Sample_1 Lib_X
+mvdir Sample_2 Lib_Z
+mvdir Sample_3 Lib_3
+mvdir Sample_2 Lib_W
+mvdir Sample_5 Lib_Y
+mvdir Sample_6 Lib_6
+mvdir Sample_7 Lib_T
+mvdir Sample_8 Lib_U
+mvdir Sample_9 Lib_9
+mvdir Sample_10 Lib_V
+mvdir Sample_11 Lib_11
+mvdir Sample_12 Lib_12
+```
 
 ###Make a new blank/original params file for each sublibrary
-
 ```
 ipyrad -n Lib_3
 ipyrad -n Lib_6
@@ -29,10 +41,9 @@ ipyrad -n Lib_Z
 ```
 
 The params file will look like:
-
 ```
 ------- ipyrad params file (v.0.3.42)-------------------------------------------
-Lib_#	                           ## [0] [assembly_name]: Assembly name. Used to name output directories for assembly steps
+Lib_ExampleName	                           ## [0] [assembly_name]: Assembly name. Used to name output directories for assembly steps
 							   ## [1] [project_dir]: Project dir (made in curdir if not present)
 							   ## [2] [raw_fastq_path]: Location of raw non-demultiplexed fastq files
 							   ## [3] [barcodes_path]: Location of barcodes file
@@ -75,51 +86,57 @@ Lib_#	                           ## [0] [assembly_name]: Assembly name. Used to 
 15. max barcode mismatch: 1
 16. filter adapters: 1
 
-command: use a for loop to run each sublibrary as a separate job for steps 1-3
+Use a for loop to run each sublibrary as a separate job for steps 1-3
 ```
 #!/bin/bash
 
-export cores=16
+export cores=32
 
 for file in ./params-Lib_*.txt; do
-bsub -J "$file" -eo "$file".err -oo "$file".out -q PQ_wettberg -n $cores -R "span[ptile=16]" -m "IB_16C_96G" time ipyrad -p "$file" -s 1234 -d -f -c $cores > "$file"_run.log 2>&1;
+bsub -J "$file" -eo "$file".err -oo "$file".out -q PQ_wettberg -n $cores -R "span[ptile=16]" -m "IB_16C_96G" time ipyrad -p "$file" -s 123 -d -f -c $cores --MPI > "$file"_run.log 2>&1;
 done
 ```
 
-###Branch each sublibrary for both clustering threshholds###:
+###Merge all 12 0.85 libraries
+`ipyrad -m 12libs params-Lib_3.txt params-Lib_6.txt params-Lib_9.txt params-Lib_11.txt params-Lib_12.txt params-Lib_T.txt params-Lib_U.txt params-Lib_V.txt params-Lib_W.txt params-Lib_X.txt params-Lib_Y.txt params-Lib_Z.txt`
+
+###Branch each sublibrary for both clustering threshholds:
+For 0.90 clustering
 ```
 ipyrad -p params-Lib_3.txt -b L3_90
-ipyrad -p params-Lib_3.txt -b L3_95
 ipyrad -p params-Lib_6.txt -b L6_90
-ipyrad -p params-Lib_6.txt -b L6_95
 ipyrad -p params-Lib_9.txt -b L9_90
-ipyrad -p params-Lib_9.txt -b L9_95
 ipyrad -p params-Lib_11.txt -b L11_90
-ipyrad -p params-Lib_11.txt -b L11_95
 ipyrad -p params-Lib_12.txt -b L12_90
-ipyrad -p params-Lib_12.txt -b L12_95
 ipyrad -p params-Lib_T.txt -b LT_90
-ipyrad -p params-Lib_T.txt -b LT_95
 ipyrad -p params-Lib_U.txt -b LU_90
-ipyrad -p params-Lib_U.txt -b LU_95
 ipyrad -p params-Lib_V.txt -b LV_90
-ipyrad -p params-Lib_V.txt -b LV_95
 ipyrad -p params-Lib_W.txt -b LW_90
-ipyrad -p params-Lib_W.txt -b LW_95
 ipyrad -p params-Lib_X.txt -b LX_90
-ipyrad -p params-Lib_X.txt -b LX_95
 ipyrad -p params-Lib_Y.txt -b LY_90
-ipyrad -p params-Lib_Y.txt -b LY_95
 ipyrad -p params-Lib_Z.txt -b LZ_90
+```
+For 0.95 clustering
+```
+ipyrad -p params-Lib_3.txt -b L3_95
+ipyrad -p params-Lib_6.txt -b L6_95
+ipyrad -p params-Lib_9.txt -b L9_95
+ipyrad -p params-Lib_11.txt -b L11_95
+ipyrad -p params-Lib_12.txt -b L12_95
+ipyrad -p params-Lib_T.txt -b LT_95
+ipyrad -p params-Lib_U.txt -b LU_95
+ipyrad -p params-Lib_V.txt -b LV_95
+ipyrad -p params-Lib_W.txt -b LW_95
+ipyrad -p params-Lib_X.txt -b LX_95
+ipyrad -p params-Lib_Y.txt -b LY_95
 ipyrad -p params-Lib_Z.txt -b LZ_95
 ```
+
 ###Edit branched params files: 0.90 & 0.95
 `nano params*90.txt`
 `nano params*95.txt`
 14. clustering threshold 0.90, 0.95, respectively
 
-###Merge all 12 0.85 libraries
-`ipyrad -m 12libs params-Lib_3.txt params-Lib_6.txt params-Lib_9.txt params-Lib_11.txt params-Lib_12.txt params-Lib_T.txt params-Lib_U.txt params-Lib_V.txt params-Lib_W.txt params-Lib_X.txt params-Lib_Y.txt params-Lib_Z.txt`
 
 ###Branch phylo individuals
 `ipyrad -p params-12libs.txt -b phylo85 3C 3E 6A 6C 6D 6F 6G 6H 9C 9F 9H 11C 11G 11H 12C 12D 12E 12F 12G 12H TA TB TC TD TE TF TG TH UA UB UC UD UE UF UG UH WA WF XA XB XC XD XE XF XG XH YB YC YG YH ZA ZB ZC ZD ZE ZF ZG ZH`
@@ -152,6 +169,52 @@ export cores=32
 bsub -J "$file" -eo "$file".err -oo "$file".out -q PQ_wettberg -n $cores -R "span[ptile=16]" -m "IB_16C_96G" time ipyrad -p params-pop85.txt -s 4567 -d -f -c $cores --MPI > "$file"_run.log 2>&1;
 ```
 
+###Branch each sublibrary for reference genome
+For 0.85 clustering
+```
+ipyrad -p params-Lib_3.txt -b L3_ref_85
+ipyrad -p params-Lib_6.txt -b L6_ref_85
+ipyrad -p params-Lib_9.txt -b L9_ref_85
+ipyrad -p params-Lib_11.txt -b L11_ref_85
+ipyrad -p params-Lib_12.txt -b L12_ref_85
+ipyrad -p params-Lib_T.txt -b LT_ref_85
+ipyrad -p params-Lib_U.txt -b LU_ref_85
+ipyrad -p params-Lib_V.txt -b LV_ref_85
+ipyrad -p params-Lib_W.txt -b LW_ref_85
+ipyrad -p params-Lib_X.txt -b LX_ref_85
+ipyrad -p params-Lib_Y.txt -b LY_ref_85
+ipyrad -p params-Lib_Z.txt -b LZ_ref_85
+```
+For 0.90 clustering
+```
+ipyrad -p params-Lib_3.txt -b L3_ref_90
+ipyrad -p params-Lib_6.txt -b L6_ref_90
+ipyrad -p params-Lib_9.txt -b L9_ref_90
+ipyrad -p params-Lib_11.txt -b L11_ref_90
+ipyrad -p params-Lib_12.txt -b L12_ref_90
+ipyrad -p params-Lib_T.txt -b LT_ref_90
+ipyrad -p params-Lib_U.txt -b LU_ref_90
+ipyrad -p params-Lib_V.txt -b LV_ref_90
+ipyrad -p params-Lib_W.txt -b LW_ref_90
+ipyrad -p params-Lib_X.txt -b LX_ref_90
+ipyrad -p params-Lib_Y.txt -b LY_ref_90
+ipyrad -p params-Lib_Z.txt -b LZ_ref_90
+```
+For 0.95 clustering
+```
+ipyrad -p params-Lib_3.txt -b L3_ref_95
+ipyrad -p params-Lib_6.txt -b L6_ref_95
+ipyrad -p params-Lib_9.txt -b L9_ref_95
+ipyrad -p params-Lib_11.txt -b L11_ref_95
+ipyrad -p params-Lib_12.txt -b L12_ref_95
+ipyrad -p params-Lib_T.txt -b LT_ref_95
+ipyrad -p params-Lib_U.txt -b LU_ref_95
+ipyrad -p params-Lib_V.txt -b LV_ref_95
+ipyrad -p params-Lib_W.txt -b LW_ref_95
+ipyrad -p params-Lib_X.txt -b LX_ref_95
+ipyrad -p params-Lib_Y.txt -b LY_ref_95
+ipyrad -p params-Lib_Z.txt -b LZ_ref_95
+```
 
 ###Rerun step 3 for the different clustering thresholds
 merge all 12 0.90 libraries
