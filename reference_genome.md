@@ -1,7 +1,7 @@
 
 #ipyrad workflow: For reference genome
 
-###Rename the files to correspond to my library names
+Rename the files to correspond to my library names
 ```
 mvdir Sample_1 LX
 mvdir Sample_2 LZ
@@ -16,7 +16,7 @@ mvdir Sample_10 LV
 mvdir Sample_11 L11
 mvdir Sample_12 L12
 ```
-###Move barcodes files into the corresponding folder:
+Move barcodes files into the corresponding folder:
 ```
 mv barcodes_3.txt L3/
 mv barcodes_6.txt L6/
@@ -33,7 +33,7 @@ mv barcodes_Z.txt LZ/
 ```
 
 ##Making params files
-###Make a new blank/original params file for each sublibrary
+Make a new blank/original params file for each sublibrary
 ```
 ipyrad -n L3_ref_0.85
 ipyrad -n L6_ref_0.85
@@ -95,7 +95,95 @@ The params file will look like:
 15. max barcode mismatch: 1
 16. filter adapters: 1
 
-###Branch the 
+###Branch the analysis so it can be run at different clustering threshholds:
+For 0.90 clustering
+```
+ipyrad -p params-L3_ref_85 -b L3_ref_90
+ipyrad -p params-L6_ref_85 -b L6_ref_90
+ipyrad -p params-L9_ref_85 -b L9_ref_90
+ipyrad -p params-L11_ref_85 -b L11_ref_90
+ipyrad -p params-L12_ref_85 -b L12_ref_90
+ipyrad -p params-LT_ref_85 -b LT_ref_90
+ipyrad -p params-LU_ref_85 -b LU_ref_90
+ipyrad -p params-LV_ref_85 -b LV_ref_90
+ipyrad -p params-LW_ref_85 -b LW_ref_90
+ipyrad -p params-LX_ref_85 -b LX_ref_90
+ipyrad -p params-LY_ref_85 -b LY_ref_90
+ipyrad -p params-LZ_ref_85 -b LZ_ref_90
+```
+###Edit each params file with the appropriate clustering threshhold
+`nano params-L*_ref_90.txt`
+14. Clustering threshhold: 0.90
+
+For 0.95 clustering
+```
+ipyrad -p params-L3_ref_85 -b L3_ref_95
+ipyrad -p params-L6_ref_85 -b L6_ref_95
+ipyrad -p params-L9_ref_85 -b L9_ref_95
+ipyrad -p params-L11_ref_85 -b L11_ref_95
+ipyrad -p params-L12_ref_85 -b L12_ref_95
+ipyrad -p params-LT_ref_85 -b LT_ref_95
+ipyrad -p params-LU_ref_85 -b LU_ref_95
+ipyrad -p params-LV_ref_85 -b LV_ref_95
+ipyrad -p params-LW_ref_85 -b LW_ref_95
+ipyrad -p params-LX_ref_85 -b LX_ref_95
+ipyrad -p params-LY_ref_85 -b LY_ref_95
+ipyrad -p params-LZ_ref_85 -b LZ_ref_95
+```
+###Edit each params file with the appropriate clustering threshhold
+`nano params-L*_ref_95.txt`
+14. Clustering threshhold: 0.95
+
+##Run step 3 with reference for each library at each clustering threshhold
+###For all \_ref\_ clustering (36 jobs total)
+**Use a for loop to run each sublibrary as a separate job for step 3**
+```
+#!/bin/bash
+
+export cores=32
+
+for file in ./params-L*ref_*.txt; do
+bsub -J "$file" -eo "$file".err -oo "$file".out -q PQ_wettberg -n $cores -R "span[ptile=16]" -m "IB_16C_96G" time ipyrad -p "$file" -s 3 -d -f -c $cores --MPI > "$file"_run.log 2>&1;
+done
+```
+
+###Merge the sublibraries for each clustering threshhold
+For 0.85 clustering:
+`ipyrad -m 12_ref_85 params-L3_ref_85.txt params-L6_ref_85.txt params-L9_ref_85.txt params-L11_ref_85.txt params-L12_ref_85.txt params-LT_ref_85.txt params-LU_ref_85.txt params-LV_ref_85.txt params-LW_ref_85.txt params-LX_ref_85.txt params-LY_ref_85.txt params-LZ_ref_85.txt`
+
+For 0.90 clustering:
+`ipyrad -m 12_ref_90 params-L3_ref_90.txt params-L6_ref_90.txt params-L9_ref_90.txt params-L11_ref_90.txt params-L12_ref_90.txt params-LT_ref_90.txt params-LU_ref_90.txt params-LV_ref_90.txt params-LW_ref_90.txt params-LX_ref_90.txt params-LY_ref_90.txt params-LZ_ref_90.txt`
+
+For 0.95 clustering:
+`ipyrad -m 12_ref_95 params-L3_ref_95.txt params-L6_ref_95.txt params-L9_ref_95.txt params-L11_ref_95.txt params-L12_ref_95.txt params-LT_ref_95.txt params-LU_ref_95.txt params-LV_ref_95.txt params-LW_ref_95.txt params-LX_ref_95.txt params-LY_ref_95.txt params-LZ_ref_95.txt`
+
+
+##Step 4: joint estimation of heterozygosity and error rate, Step 5: consensus base calling and filtering, Step 6: clustering/mapping across individuals, Step 7: filtering and formatting data output
+
+###Run step 4-7 on each sublibrary
+For 12_ref_0.85
+```
+export cores=32
+export file=12_ref_85
+
+bsub -J "$file" -eo "$file".err -oo "$file".out -q PQ_wettberg -n "$cores" -R "span[ptile=16]" -m "IB_16C_96G" time ipyrad -p params-12libs_85.txt -s 4567 -d -f -c "$cores" --MPI > "$file"_run.l$
+```
+
+For 12_ref_0.90
+```
+export cores=32
+export file=12_ref_90
+
+bsub -J "$file" -eo "$file".err -oo "$file".out -q PQ_wettberg -n "$cores" -R "span[ptile=16]" -m "IB_16C_96G" time ipyrad -p params-12libs_90.txt -s 4567 -d -f -c "$cores" --MPI > "$file"_run.l$
+```
+
+For 12_ref_0.95
+```
+export cores=32
+export file=12_ref_95
+
+bsub -J "$file" -eo "$file".err -oo "$file".out -q PQ_wettberg -n "$cores" -R "span[ptile=16]" -m "IB_16C_96G" time ipyrad -p params-12libs_95.txt -s 4567 -d -f -c "$cores" --MPI > "$file"_run.l$
+```
 
 ###Run steps 1-3
 **Use a for loop to run each sublibrary as a separate job for steps 1-3**
@@ -260,89 +348,6 @@ ipyrad -p params-Lib_Z.txt -b LZ_ref_85
 6. Reference sequence: filepath
 14. Clustering threshhold: 0.85
 
-For 0.90 clustering
-```
-ipyrad -p params-L3_ref_85 -b L3_ref_90
-ipyrad -p params-L6_ref_85 -b L6_ref_90
-ipyrad -p params-L9_ref_85 -b L9_ref_90
-ipyrad -p params-L11_ref_85 -b L11_ref_90
-ipyrad -p params-L12_ref_85 -b L12_ref_90
-ipyrad -p params-LT_ref_85 -b LT_ref_90
-ipyrad -p params-LU_ref_85 -b LU_ref_90
-ipyrad -p params-LV_ref_85 -b LV_ref_90
-ipyrad -p params-LW_ref_85 -b LW_ref_90
-ipyrad -p params-LX_ref_85 -b LX_ref_90
-ipyrad -p params-LY_ref_85 -b LY_ref_90
-ipyrad -p params-LZ_ref_85 -b LZ_ref_90
-```
-###Edit each params file with the appropriate clustering threshhold
-`nano params-L*_ref_90.txt`
-14. Clustering threshhold: 0.90
-
-For 0.95 clustering
-```
-ipyrad -p params-L3_ref_85 -b L3_ref_95
-ipyrad -p params-L6_ref_85 -b L6_ref_95
-ipyrad -p params-L9_ref_85 -b L9_ref_95
-ipyrad -p params-L11_ref_85 -b L11_ref_95
-ipyrad -p params-L12_ref_85 -b L12_ref_95
-ipyrad -p params-LT_ref_85 -b LT_ref_95
-ipyrad -p params-LU_ref_85 -b LU_ref_95
-ipyrad -p params-LV_ref_85 -b LV_ref_95
-ipyrad -p params-LW_ref_85 -b LW_ref_95
-ipyrad -p params-LX_ref_85 -b LX_ref_95
-ipyrad -p params-LY_ref_85 -b LY_ref_95
-ipyrad -p params-LZ_ref_85 -b LZ_ref_95
-```
-
-###Edit each params file with the appropriate clustering threshhold
-`nano params-L*_ref_95.txt`
-5. Assembly method: reference
-6. Reference sequence: filepath
-14. Clustering threshhold: 0.95
-
-##Rerun step 3 with reference for each library at each clustering threshhold
-###For all \_ref\_ clustering (36 jobs total)
-**Use a for loop to run each sublibrary as a separate job for step 3**
-```
-#!/bin/bash
-
-export cores=32
-
-for file in ./params-L*ref_*.txt; do
-bsub -J "$file" -eo "$file".err -oo "$file".out -q PQ_wettberg -n $cores -R "span[ptile=16]" -m "IB_16C_96G" time ipyrad -p "$file" -s 3 -d -f -c $cores --MPI > "$file"_run.log 2>&1;
-done
-```
-###Merge the sublibraries for each clustering threshhold
-For 0.85 clustering:
-`ipyrad -m 12_ref_85 params-L3_ref_85.txt params-L6_ref_85.txt params-L9_ref_85.txt params-L11_ref_85.txt params-L12_ref_85.txt params-LT_ref_85.txt params-LU_ref_85.txt params-LV_ref_85.txt params-LW_ref_85.txt params-LX_ref_85.txt params-LY_ref_85.txt params-LZ_ref_85.txt`
-
-For 0.90 clustering:
-`ipyrad -m 12_ref_90 params-L3_ref_90.txt params-L6_ref_90.txt params-L9_ref_90.txt params-L11_ref_90.txt params-L12_ref_90.txt params-LT_ref_90.txt params-LU_ref_90.txt params-LV_ref_90.txt params-LW_ref_90.txt params-LX_ref_90.txt params-LY_ref_90.txt params-LZ_ref_90.txt`
-
-For 0.95 clustering:
-`ipyrad -m 12_ref_95 params-L3_ref_95.txt params-L6_ref_95.txt params-L9_ref_95.txt params-L11_ref_95.txt params-L12_ref_95.txt params-LT_ref_95.txt params-LU_ref_95.txt params-LV_ref_95.txt params-LW_ref_95.txt params-LX_ref_95.txt params-LY_ref_95.txt params-LZ_ref_95.txt`
-
-
-##Step 4: joint estimation of heterozygosity and error rate, Step 5: consensus base calling and filtering, Step 6: clustering/mapping across individuals, Step 7: filtering and formatting data output
-
-###Run step 4-7 on each sublibrary
-**Run step 4-7 using MPI**
-For 12_ref_0.85
-```
-export cores=32
-export file=12_ref_85
-
-bsub -J "$file" -eo "$file".err -oo "$file".out -q PQ_wettberg -n "$cores" -R "span[ptile=16]" -m "IB_16C_96G" time ipyrad -p params-12libs_85.txt -s 4567 -d -f -c "$cores" --MPI > "$file"_run.l$
-```
-
-For 12_ref_0.90
-```
-export cores=32
-export file=12_ref_90
-
-bsub -J "$file" -eo "$file".err -oo "$file".out -q PQ_wettberg -n "$cores" -R "span[ptile=16]" -m "IB_16C_96G" time ipyrad -p params-12libs_90.txt -s 4567 -d -f -c "$cores" --MPI > "$file"_run.l$
-```
 
 For 12_ref_0.95
 ```
