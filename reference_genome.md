@@ -1,53 +1,58 @@
 
-#ipyrad workflow: Oct 13 2016
+#ipyrad workflow: For reference genome
 
-##Data downloading and organization
-###Copy the data onto hard drive:
-The tarball is up on the cluster. Copy it to your current directory.
-`cp ~/Mangomics/mangomics.tar`
-
-###Unwrap the tarball
-`tar -xvf mangomics.tar`
-This puts the files in a stupid directory called `Project_Emily` Move them to the current directory
-`mv Project_Emily/Sample* .`
-
-###Rename the files to correspond to the real library name
+###Rename the files to correspond to my library names
 ```
-mvdir Sample_1 Lib_X
-mvdir Sample_2 Lib_Z
-mvdir Sample_3 Lib_3
-mvdir Sample_2 Lib_W
-mvdir Sample_5 Lib_Y
-mvdir Sample_6 Lib_6
-mvdir Sample_7 Lib_T
-mvdir Sample_8 Lib_U
-mvdir Sample_9 Lib_9
-mvdir Sample_10 Lib_V
-mvdir Sample_11 Lib_11
-mvdir Sample_12 Lib_12
+mvdir Sample_1 LX
+mvdir Sample_2 LZ
+mvdir Sample_3 L3
+mvdir Sample_2 LW
+mvdir Sample_5 LY
+mvdir Sample_6 L6
+mvdir Sample_7 LT
+mvdir Sample_8 LU
+mvdir Sample_9 L9
+mvdir Sample_10 LV
+mvdir Sample_11 L11
+mvdir Sample_12 L12
+```
+###Move barcodes files into the corresponding folder:
+```
+mv barcodes_3.txt L3/
+mv barcodes_6.txt L6/
+mv barcodes_9.txt L6/
+mv barcodes_11.txt L11/
+mv barcodes_12.txt L12/
+mv barcodes_T.txt LT/
+mv barcodes_U.txt LU/
+mv barcodes_V.txt LV/
+mv barcodes_W.txt LW/
+mv barcodes_X.txt LX/
+mv barcodes_Y.txt LY/
+mv barcodes_Z.txt LZ/
 ```
 
 ##Making params files
 ###Make a new blank/original params file for each sublibrary
 ```
-ipyrad -n Lib_3
-ipyrad -n Lib_6
-ipyrad -n Lib_9
-ipyrad -n Lib_11
-ipyrad -n Lib_12
-ipyrad -n Lib_T
-ipyrad -n Lib_U
-ipyrad -n Lib_V
-ipyrad -n Lib_W
-ipyrad -n Lib_X
-ipyrad -n Lib_Y
-ipyrad -n Lib_Z
+ipyrad -n L3_ref_0.85
+ipyrad -n L6_ref_0.85
+ipyrad -n L9_ref_0.85
+ipyrad -n L11_ref_0.85
+ipyrad -n L12_ref_0.85
+ipyrad -n LT_ref_0.85
+ipyrad -n LU_ref_0.85
+ipyrad -n LV_ref_0.85
+ipyrad -n LW_ref_0.85
+ipyrad -n LX_ref_0.85
+ipyrad -n LY_ref_0.85
+ipyrad -n LZ_ref_0.85
 ```
 
 The params file will look like:
 ```
 ------- ipyrad params file (v.0.3.42)-------------------------------------------
-Lib_ExampleName	                           ## [0] [assembly_name]: Assembly name. Used to name output directories for assembly steps
+	                           ## [0] [assembly_name]: Assembly name. Used to name output directories for assembly steps
 							   ## [1] [project_dir]: Project dir (made in curdir if not present)
 							   ## [2] [raw_fastq_path]: Location of raw non-demultiplexed fastq files
 							   ## [3] [barcodes_path]: Location of barcodes file
@@ -80,27 +85,31 @@ Lib_ExampleName	                           ## [0] [assembly_name]: Assembly name
 
 ##Steps 1-3: demultiplexing, filtering, clustering.
 
-###Set parameters for each params file:
-1. project dir (probably leave this the default)
-2. raw fastq path
-3. barcodes path
-5. assembly method: denovo
-7. datatype: pairddrad
-8. restriction overhang: CATG, AATT
+###Change the following parameters for each params file (this is the annoying part)
+2. raw fastq path (example - needs to be changed to correspond to each Library): `./L3/*.fastq.gz`
+3. barcodes path (example - needs to be changed to correspond to each Library): `./L3/barcodes_3.txt`
+5. assembly method: `reference`
+6. reference sequence: ____fill in your filepath____
+7. datatype: `pairddrad`
+8. restriction overhang: `CATG, AATT`
 15. max barcode mismatch: 1
 16. filter adapters: 1
 
+###Branch the 
+
 ###Run steps 1-3
 **Use a for loop to run each sublibrary as a separate job for steps 1-3**
+Here is the one I use to run it on the FIU cluster
 ```
 #!/bin/bash
 
 export cores=32
 
-for file in ./params-Lib_*.txt; do
+for file in ./params-L*_ref_0.85.txt; do
 bsub -J "$file" -eo "$file".err -oo "$file".out -q PQ_wettberg -n $cores -R "span[ptile=16]" -m "IB_16C_96G" time ipyrad -p "$file" -s 123 -d -f -c $cores --MPI > "$file"_run.log 2>&1;
 done
 ```
+the ipyrad command itself is: `ipyrad -p "$file" -s 123 -d -f -c $cores --MPI`
 
 ###Merge all 12 0.85 libraries
 `ipyrad -m 12libs params-Lib_3.txt params-Lib_6.txt params-Lib_9.txt params-Lib_11.txt params-Lib_12.txt params-Lib_T.txt params-Lib_U.txt params-Lib_V.txt params-Lib_W.txt params-Lib_X.txt params-Lib_Y.txt params-Lib_Z.txt`
