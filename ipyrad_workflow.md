@@ -228,7 +228,7 @@ export cores=32
 bsub -J "$file" -eo "$file".err -oo "$file".out -q PQ_wettberg -n $cores -R "span[ptile=16]" -m "IB_16C_96G" time ipyrad -p params-pop85.txt -s 4567 -d -f -c $cores --MPI > "$file"_run.log 2>&1;
 ```
 
-###Branch each sublibrary for reference genome
+##Branch each sublibrary for reference genome
 For 0.85 clustering
 ```
 ipyrad -p params-Lib_3.txt -b L3_ref_85
