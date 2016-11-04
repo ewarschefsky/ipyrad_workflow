@@ -96,7 +96,7 @@ The params file will look like:
 16. filter adapters: 1
 
 ###Branch the analysis so it can be run at different clustering threshholds:
-For 0.90 clustering
+####For 0.90 clustering
 ```
 ipyrad -p params-L3_ref_85 -b L3_ref_90
 ipyrad -p params-L6_ref_85 -b L6_ref_90
@@ -111,11 +111,11 @@ ipyrad -p params-LX_ref_85 -b LX_ref_90
 ipyrad -p params-LY_ref_85 -b LY_ref_90
 ipyrad -p params-LZ_ref_85 -b LZ_ref_90
 ```
-###Edit each params file with the appropriate clustering threshhold
+**Edit each params file with the appropriate clustering threshhold**
 `nano params-L*_ref_90.txt`
 14. Clustering threshhold: 0.90
 
-For 0.95 clustering
+####For 0.95 clustering
 ```
 ipyrad -p params-L3_ref_85 -b L3_ref_95
 ipyrad -p params-L6_ref_85 -b L6_ref_95
@@ -130,7 +130,7 @@ ipyrad -p params-LX_ref_85 -b LX_ref_95
 ipyrad -p params-LY_ref_85 -b LY_ref_95
 ipyrad -p params-LZ_ref_85 -b LZ_ref_95
 ```
-###Edit each params file with the appropriate clustering threshhold
+**Edit each params file with the appropriate clustering threshhold**
 `nano params-L*_ref_95.txt`
 14. Clustering threshhold: 0.95
 
