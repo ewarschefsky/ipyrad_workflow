@@ -160,27 +160,14 @@ For 0.95 clustering:
 
 ##Step 4: joint estimation of heterozygosity and error rate, Step 5: consensus base calling and filtering, Step 6: clustering/mapping across individuals, Step 7: filtering and formatting data output
 
-###Run step 4-7 on each sublibrary
-For 12_ref_0.85
+###Run step 4-7 on each clustering threshhold using a for loop:
+
 ```
+#!/bin/bash
+
 export cores=32
-export file=12_ref_85
 
-bsub -J "$file" -eo "$file".err -oo "$file".out -q PQ_wettberg -n "$cores" -R "span[ptile=16]" -m "IB_16C_96G" time ipyrad -p params-12libs_85.txt -s 4567 -d -f -c "$cores" --MPI > "$file"_run.l$
-```
-
-For 12_ref_0.90
-```
-export cores=32
-export file=12_ref_90
-
-bsub -J "$file" -eo "$file".err -oo "$file".out -q PQ_wettberg -n "$cores" -R "span[ptile=16]" -m "IB_16C_96G" time ipyrad -p params-12libs_90.txt -s 4567 -d -f -c "$cores" --MPI > "$file"_run.l$
-```
-
-For 12_ref_0.95
-```
-export cores=32
-export file=12_ref_95
-
-bsub -J "$file" -eo "$file".err -oo "$file".out -q PQ_wettberg -n "$cores" -R "span[ptile=16]" -m "IB_16C_96G" time ipyrad -p params-12libs_95.txt -s 4567 -d -f -c "$cores" --MPI > "$file"_run.l$
+for file in ./params-12_ref_*.txt; do
+bsub -J "$file" -eo "$file".err -oo "$file".out -q PQ_wettberg -n $cores -R "span[ptile=16]" -m "IB_16C_96G" time ipyrad -p "$file" -s 4567 -d -f -c $cores --MPI > "$file"_run.log 2>&1;
+done
 ```
