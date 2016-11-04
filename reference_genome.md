@@ -134,7 +134,7 @@ ipyrad -p params-LZ_ref_85 -b LZ_ref_95
 `nano params-L*_ref_95.txt`
 14. Clustering threshhold: 0.95
 
-##Run step 3 with reference for each library at each clustering threshhold
+##Run steps 1-3 with reference for each library at each clustering threshhold
 ###For all \_ref\_ clustering (36 jobs total)
 **Use a for loop to run each sublibrary as a separate job for step 3**
 ```
@@ -143,7 +143,7 @@ ipyrad -p params-LZ_ref_85 -b LZ_ref_95
 export cores=32
 
 for file in ./params-L*ref_*.txt; do
-bsub -J "$file" -eo "$file".err -oo "$file".out -q PQ_wettberg -n $cores -R "span[ptile=16]" -m "IB_16C_96G" time ipyrad -p "$file" -s 3 -d -f -c $cores --MPI > "$file"_run.log 2>&1;
+bsub -J "$file" -eo "$file".err -oo "$file".out -q PQ_wettberg -n $cores -R "span[ptile=16]" -m "IB_16C_96G" time ipyrad -p "$file" -s 123 -d -f -c $cores --MPI > "$file"_run.log 2>&1;
 done
 ```
 
