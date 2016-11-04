@@ -1,14 +1,15 @@
 #ipyrad workflow: Oct 13 2016
 
-###Copy the data
-The tarball is up on the cluster: 
-Copy it to your current directory
-```cp ~/Mangomics/mangomics.tar .```
-Unwrap the tarball
-```tar -xvf mangomics.tar```
-This puts the files in a stupid directory called ```Project_Emily``` move them to the current directory
-```mv Project_Emily/Sample* .```
-Rename the files to correspond to the real library name
+##Copy the data onto hard drive:
+The tarball is up on the cluster. Copy it to your current directory.
+`cp ~/Mangomics/mangomics.tar`
+
+###Unwrap the tarball
+`tar -xvf mangomics.tar`
+This puts the files in a stupid directory called `Project_Emily` Move them to the current directory
+`mv Project_Emily/Sample* .`
+
+###Rename the files to correspond to the real library name
 ```
 mvdir Sample_1 Lib_X
 mvdir Sample_2 Lib_Z
@@ -100,8 +101,19 @@ done
 ###Merge all 12 0.85 libraries
 `ipyrad -m 12libs params-Lib_3.txt params-Lib_6.txt params-Lib_9.txt params-Lib_11.txt params-Lib_12.txt params-Lib_T.txt params-Lib_U.txt params-Lib_V.txt params-Lib_W.txt params-Lib_X.txt params-Lib_Y.txt params-Lib_Z.txt`
 
-###Branch each sublibrary for both clustering threshholds:
-For 0.90 clustering
+### Steps 4-7:
+run step 4-7 on 0.85 using MPI
+```
+export cores=32
+export file=12libs
+
+bsub -J "$file" -eo "$file".err -oo "$file".out -q PQ_wettberg -n "$cores" -R "span[ptile=16]" -m "IB_16C_96G" time ipyrad -p params-12libs.txt -s 4567 -d -f -c "$cores" --MPI > "$file"_run.l$
+```
+
+#Branching to change parameters:
+
+##Different clustering threshholds:
+###For 0.90 clustering
 ```
 ipyrad -p params-Lib_3.txt -b L3_90
 ipyrad -p params-Lib_6.txt -b L6_90
@@ -116,7 +128,35 @@ ipyrad -p params-Lib_X.txt -b LX_90
 ipyrad -p params-Lib_Y.txt -b LY_90
 ipyrad -p params-Lib_Z.txt -b LZ_90
 ```
-For 0.95 clustering
+Edit branched params files:
+`nano params*90.txt`
+14. clustering threshold 0.90
+
+###Rerun step 3:
+Use a for loop to run each sublibrary as a separate job for step 3
+```
+#!/bin/bash
+
+export cores=32
+
+for file in ./params-L*90.txt; do
+bsub -J "$file" -eo "$file".err -oo "$file".out -q PQ_wettberg -n $cores -R "span[ptile=16]" -m "IB_16C_96G" time ipyrad -p "$file" -s 123 -d -f -c $cores --MPI > "$file"_run.log 2>&1;
+done
+```
+
+###Merge all 12 0.90 libraries:
+`ipyrad -m 12libs_90 params-L3_90.txt params-L6_90.txt params-L9_90.txt params-L11_90.txt params-L12_90.txt params-LT_90.txt params-LU_90.txt params-LV_90.txt params-LW_90.txt params-LX_90.txt params-LY_90.txt params-LZ_90.txt`
+
+###Steps 4-7:
+run step 4-7 on all 0.85 using MPI
+```
+export cores=32
+export file=12libs_90
+
+bsub -J "$file" -eo "$file".err -oo "$file".out -q PQ_wettberg -n "$cores" -R "span[ptile=16]" -m "IB_16C_96G" time ipyrad -p params-12libs_90.txt -s 4567 -d -f -c "$cores" --MPI > "$file"_run.l$
+```
+
+###For 0.95 clustering
 ```
 ipyrad -p params-Lib_3.txt -b L3_95
 ipyrad -p params-Lib_6.txt -b L6_95
@@ -132,10 +172,33 @@ ipyrad -p params-Lib_Y.txt -b LY_95
 ipyrad -p params-Lib_Z.txt -b LZ_95
 ```
 
-###Edit branched params files: 0.90 & 0.95
-`nano params*90.txt`
+Edit branched params files:
 `nano params*95.txt`
-14. clustering threshold 0.90, 0.95, respectively
+14. clustering threshold 0.95
+
+###Rerun step 3:
+Use a for loop to run each sublibrary as a separate job for step 3
+```
+#!/bin/bash
+
+export cores=32
+
+for file in ./params-L*95.txt; do
+bsub -J "$file" -eo "$file".err -oo "$file".out -q PQ_wettberg -n $cores -R "span[ptile=16]" -m "IB_16C_96G" time ipyrad -p "$file" -s 123 -d -f -c $cores --MPI > "$file"_run.log 2>&1;
+done
+```
+
+###Merge all 12 0.95 libraries:
+`ipyrad -m 12libs_95 params-L3_95.txt params-L6_95.txt params-L9_90.txt params-L11_90.txt params-L12_90.txt params-LT_90.txt params-LU_95.txt params-LV_95.txt params-LW_90.txt params-LX_90.txt params-LY_90.txt params-LZ_90.txt`
+
+###Steps 4-7:
+run step 4-7 on all 0.85 using MPI
+```
+export cores=32
+export file=12libs_90
+
+bsub -J "$file" -eo "$file".err -oo "$file".out -q PQ_wettberg -n "$cores" -R "span[ptile=16]" -m "IB_16C_96G" time ipyrad -p params-12libs_90.txt -s 4567 -d -f -c "$cores" --MPI > "$file"_run.l$
+```
 
 
 ###Branch phylo individuals
@@ -233,21 +296,6 @@ pop90
 pop95
 
 ###Step 4: joint estimation of heterozygosity and error rate, Step 5: consensus base calling and filtering, Step 6: clustering/mapping across individuals, Step 7: filtering and formatting data output
-
-run step 4-7 on phylo 0.85 using MPI
-```
-export cores=32
-export file=12libs
-
-bsub -J "$file" -eo "$file".err -oo "$file".out -q PQ_wettberg -n "$cores" -R "span[ptile=16]" -m "IB_16C_96G" time ipyrad -p params-12libs.txt -s 4567 -d -f -c "$cores" --MPI > "$file"_run.l$
-```
-not using MPI
-```
-export cores=16
-export file=12libs
-
-bsub -J "$file" -eo "$file".err -oo "$file".out -q PQ_wettberg -n "$cores" -R "span[ptile=16]" -m "IB_16C_96G" time ipyrad -p params-12libs.txt -s 4567 -d -f -c "$cores" > "$file"_run.l$
-```
 
 run step 4-7 on phylo 0.90
 run step 4-7 on phylo 0.95
