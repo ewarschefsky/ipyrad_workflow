@@ -151,7 +151,7 @@ done
 `ipyrad -m 12libs_90 params-L3_90.txt params-L6_90.txt params-L9_90.txt params-L11_90.txt params-L12_90.txt params-LT_90.txt params-LU_90.txt params-LV_90.txt params-LW_90.txt params-LX_90.txt params-LY_90.txt params-LZ_90.txt`
 
 ###Steps 4-7:
-**Run step 4-7 on all 0.85 using MPI**
+**Run step 4-7 on all 0.90 using MPI**
 ```
 export cores=32
 export file=12libs_90
