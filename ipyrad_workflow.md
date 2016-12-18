@@ -39,21 +39,26 @@ mv Sample_Sample_11/* Lib11
 mv Sample_Sample_12/* Lib12
 ```
 
+##Move barcodes files into proper folder
+```
+cp /home/ewars001/Mangomics/Lane1/L3_barcodes.txt Lib3
+cp /home/ewars001/Mangomics/Lane1/L6_barcodes.txt Lib6
+cp /home/ewars001/Mangomics/Lane1/L9_barcodes.txt Lib9
+cp /home/ewars001/Mangomics/Lane1/L11_barcodes.txt Lib11
+cp /home/ewars001/Mangomics/Lane1/L12_barcodes.txt Lib12
+cp /home/ewars001/Mangomics/Lane1/LT_barcodes.txt LibT
+cp /home/ewars001/Mangomics/Lane1/LU_barcodes.txt LibU
+cp /home/ewars001/Mangomics/Lane1/LV_barcodes.txt LibV
+cp /home/ewars001/Mangomics/Lane1/LW_barcodes.txt LibW
+cp /home/ewars001/Mangomics/Lane1/LX_barcodes.txt LibX
+cp /home/ewars001/Mangomics/Lane1/LY_barcodes.txt LibY
+cp /home/ewars001/Mangomics/Lane1/LZ_barcodes.txt LibZ
+```
+
 ##Making params files
 ###Make a new blank/original params file for each sublibrary
 ```
-ipyrad -n Lib3
-ipyrad -n Lib6
-ipyrad -n Lib9
-ipyrad -n Lib11
-ipyrad -n Lib12
-ipyrad -n LibT
-ipyrad -n LibU
-ipyrad -n LibV
-ipyrad -n LibW
-ipyrad -n LibX
-ipyrad -n LibY
-ipyrad -n LibZ
+ipyrad -n L3
 ```
 
 The params file will look like:
@@ -101,6 +106,23 @@ Lib_ExampleName	                           ## [0] [assembly_name]: Assembly name
 8. restriction overhang: CATG, AATT
 15. max barcode mismatch: 1
 16. filter adapters: 1
+
+###Branch the workflow for each sublibrary
+ipyrad -p params-L3.txt -b L6
+ipyrad -p params-L3.txt -b L9
+ipyrad -p params-L3.txt -b L11
+ipyrad -p params-L3.txt -b L12
+ipyrad -p params-L3.txt -b LT
+ipyrad -p params-L3.txt -b LU
+ipyrad -p params-L3.txt -b LV
+ipyrad -p params-L3.txt -b LW
+ipyrad -p params-L3.txt -b LX
+ipyrad -p params-L3.txt -b LY
+ipyrad -p params-L3.txt -b LZ
+
+###Set parameters for each params file:
+1. project dir (probably leave this the default)
+2. raw fastq path
 
 ###Run steps 1-3
 **Use a for loop to run each sublibrary as a separate job for steps 1-3**
