@@ -3,27 +3,27 @@
 ##Data downloading and organization
 ###Copy the data onto hard drive:
 The tarball is up on the cluster. Copy it to your current directory.
-`cp ~/Mangomics/mangomics.tar`
+`cp ~/Mangomics/mangomics1.tar .`
 
 ###Unwrap the tarball
-`tar -xvf mangomics.tar`
+`tar -xvf mangomics1.tar`
 This puts the files in a stupid directory called `Project_Emily` Move them to the current directory
 `mv Project_Emily/Sample* .`
 
 ###Rename the files to correspond to the real library name
 ```
-mvdir Sample_1 Lib_X
-mvdir Sample_2 Lib_Z
-mvdir Sample_3 Lib_3
-mvdir Sample_2 Lib_W
-mvdir Sample_5 Lib_Y
-mvdir Sample_6 Lib_6
-mvdir Sample_7 Lib_T
-mvdir Sample_8 Lib_U
-mvdir Sample_9 Lib_9
-mvdir Sample_10 Lib_V
-mvdir Sample_11 Lib_11
-mvdir Sample_12 Lib_12
+mvdir Sample_Sample_1 Lib_X
+mvdir Sample_Sample_2 Lib_Z
+mvdir Sample_Sample_3 Lib_3
+mvdir Sample_Sample_2 Lib_W
+mvdir Sample_Sample_5 Lib_Y
+mvdir Sample_Sample_6 Lib_6
+mvdir Sample_Sample_7 Lib_T
+mvdir Sample_Sample_8 Lib_U
+mvdir Sample_Sample_9 Lib_9
+mvdir Sample_Sample_10 Lib_V
+mvdir Sample_Sample_11 Lib_11
+mvdir Sample_Sample_12 Lib_12
 ```
 
 ##Making params files
