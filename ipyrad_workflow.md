@@ -12,35 +12,48 @@ This puts the files in a stupid directory called `Project_Emily` Move them to th
 
 ###Rename the files to correspond to the real library name
 ```
-mvdir Sample_Sample_1 Lib_X
-mvdir Sample_Sample_2 Lib_Z
-mvdir Sample_Sample_3 Lib_3
-mvdir Sample_Sample_2 Lib_W
-mvdir Sample_Sample_5 Lib_Y
-mvdir Sample_Sample_6 Lib_6
-mvdir Sample_Sample_7 Lib_T
-mvdir Sample_Sample_8 Lib_U
-mvdir Sample_Sample_9 Lib_9
-mvdir Sample_Sample_10 Lib_V
-mvdir Sample_Sample_11 Lib_11
-mvdir Sample_Sample_12 Lib_12
+mkdir LibX
+mkdir LibZ
+mkdir Lib3
+mkdir LibW
+mkdir LibY
+mkdir Lib6
+mkdir LibT
+mkdir LibU
+mkdir Lib9
+mkdir LibV
+mkdir Lib11
+mkdir Lib12
+
+mv Sample_Sample_1/* LibX
+mv Sample_Sample_2/* LibZ
+mv Sample_Sample_3/* Lib3
+mv Sample_Sample_4/* LibW
+mv Sample_Sample_5/* LibY
+mv Sample_Sample_6/* Lib6
+mv Sample_Sample_7/* LibT
+mv Sample_Sample_8/* LibU
+mv Sample_Sample_9/* Lib9
+mv Sample_Sample_10/* LibV
+mv Sample_Sample_11/* Lib11
+mv Sample_Sample_12/* Lib12
 ```
 
 ##Making params files
 ###Make a new blank/original params file for each sublibrary
 ```
-ipyrad -n Lib_3
-ipyrad -n Lib_6
-ipyrad -n Lib_9
-ipyrad -n Lib_11
-ipyrad -n Lib_12
-ipyrad -n Lib_T
-ipyrad -n Lib_U
-ipyrad -n Lib_V
-ipyrad -n Lib_W
-ipyrad -n Lib_X
-ipyrad -n Lib_Y
-ipyrad -n Lib_Z
+ipyrad -n Lib3
+ipyrad -n Lib6
+ipyrad -n Lib9
+ipyrad -n Lib11
+ipyrad -n Lib12
+ipyrad -n LibT
+ipyrad -n LibU
+ipyrad -n LibV
+ipyrad -n LibW
+ipyrad -n LibX
+ipyrad -n LibY
+ipyrad -n LibZ
 ```
 
 The params file will look like:
