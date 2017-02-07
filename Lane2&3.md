@@ -59,15 +59,17 @@ done
    
    
 #Combine 'redo' with Lane3
-cd Lane3_redo/
-mv ./*/*.fastq* .
+`cd Lane3_redo/`
+`mv ./*/*.fastq* .`
+`
 for f in *.fastq.gz; do mv "$f" "$(basename $f .fastq.gz).redo"; done
 for f in *.redo; do mv "$f" "$f.fastq.gz"; done
 ls
 cd ..
 mv Lane3_redo/*fastq.gz* Lane3/
 cd Lane3
-
+`
+`
 mv Sample_10_TAGCTT_L002_R1_001.redo.fastq.gz Sample_Sample_10
 mv Sample_11_TAATCG_L002_R1_001.redo.fastq.gz Sample_Sample_11
 mv Sample_12_TACAGC_L002_R1_001.redo.fastq.gz Sample_Sample_12
@@ -80,6 +82,31 @@ mv Sample_6_CCGTCC_L002_R1_001.redo.fastq.gz Sample_Sample_6
 mv Sample_7_GTTTCG_L002_R1_001.redo.fastq.gz Sample_Sample_7
 mv Sample_8_GGTAGC_L002_R1_001.redo.fastq.gz Sample_Sample_8
 mv Sample_9_CAACTA_L002_R1_001.redo.fastq.gz Sample_Sample_9
+`
+`
+for dir in Sample*; 
+  do echo "$dir"; 
+    for file in "$dir"/*001.fastq.gz;
+      do cat "$file" "$dir"/*redo.fastq.gz > "$dir/$(basename $file .fastq.gz).comb.fastq.gz";
+    done;
+done
+`
+## For redemultiplexed Idx37:
+
+###Lane2
+`
+cd L2_S10_redo/ 
+mv */*.fastq* .
+
+for f in *.fastq.gz; do mv "$f" "$(basename $f .fastq.gz).redo"; done
+for f in *.redo; do mv "$f" "$f.fastq.gz"; done
+
+ls 
+cd .. 
+mv L2_S10_redo/*fastq.gz* L2_S10/ 
+
+cd L2_S10
+mv Sample_10_* Sample_Sample_10
 
 for dir in Sample*; 
   do echo "$dir"; 
@@ -87,7 +114,31 @@ for dir in Sample*;
       do cat "$file" "$dir"/*redo.fastq.gz > "$dir/$(basename $file .fastq.gz).comb.fastq.gz";
     done;
 done
-   
+`
+###Lane3:
+`
+cd L3_S10_redo/
+mv */*.fastq* .
+
+for f in *.fastq.gz; do mv "$f" "$(basename $f .fastq.gz).redo"; done
+for f in *.redo; do mv "$f" "$f.fastq.gz"; done
+
+ls 
+cd .. 
+mv L3_S10_redo/*fastq.gz* L3_S10/
+
+cd L3_S10
+mv Sample_10_* Sample_Sample_10
+
+for dir in Sample*; 
+  do echo "$dir"; 
+    for file in "$dir"/*001.fastq.gz;
+      do cat "$file" "$dir"/*redo.fastq.gz > "$dir/$(basename $file .fastq.gz).comb.fastq.gz";
+    done;
+done
+`
+
+
 #Lane 3:
 mv Sample_Sample_1 LibM
 mv Sample_Sample_2 LibN
@@ -132,6 +183,10 @@ cp ~/Mangomics/Lane3_barcodes/Lib14* Lib14/Lib14_barcodes.txt
 cp ~/Mangomics/Lane3_barcodes/Lib15* Lib15/Lib15_barcodes.txt
 cp ~/Mangomics/Lane3_barcodes/Lib16* Lib16/Lib16_barcodes.txt
 cp ~/Mangomics/Lane3_barcodes/Lib17* Lib17/Lib17_barcodes.txt
+
+
+
+
 
 # FOR LANE 2: Make a params file:
 ipyrad -n LibA
